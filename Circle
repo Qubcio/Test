@@ -1,0 +1,52 @@
+package com.example.qubcio.circlegame;
+
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+
+/**
+ * Created by Qubcio on 4/15/16.
+ */
+public class Circle
+{
+    private int x,y;
+    private int posX,posY;
+    private CirclesTypes circlesType;
+    private int squareSize;
+    public Circle(CirclesTypes circlesType, int x, int y, GamePanel gamePanel)
+    {
+        this.circlesType = circlesType;
+        this.x = x;
+        this.y = y;
+        this.squareSize = gamePanel.getSquareSize();
+        this.posX = (int)(gamePanel.getX() + squareSize*x + squareSize/2);
+        this.posY = (int)(gamePanel.getY() + squareSize*y + squareSize/2);
+    }
+
+    public void update()
+    {
+
+    }
+
+    public void draw(Canvas canvas)
+    {
+        Paint paint = new Paint();
+        switch (circlesType)
+        {
+            case Yellow:{
+                paint.setColor(Color.YELLOW);
+            }   break;
+            case Red:{
+                paint.setColor(Color.RED);
+            }   break;
+            case Green:{
+                paint.setColor(Color.GREEN);
+            }   break;
+            case Blue:{
+                paint.setColor(Color.BLUE);
+            }   break;
+        }
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawCircle(posX, posY, squareSize/2-15, paint);
+    }
+}
