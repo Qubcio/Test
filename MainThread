@@ -1,0 +1,57 @@
+package com.example.qubcio.circlegame;
+
+import android.graphics.Canvas;
+import android.view.SurfaceHolder;
+
+public class MainThread extends Thread
+{
+    private GamePanel gamePanel;
+    private SurfaceHolder surfaceHolder;
+    private boolean running;
+
+    public MainThread(GamePanel gamePanel, SurfaceHolder surfaceHolder)
+    {
+        this.gamePanel = gamePanel;
+        this.surfaceHolder = surfaceHolder;
+        running = false;
+    }
+
+    @Override
+    public void run()
+    {
+        Canvas canvas = null;
+        double startTime;
+        double timeMillis;
+        double waitTime;
+        int targetTime = 100;
+        while(running)
+        {
+            startTime = System.nanoTime();
+            try{
+                canvas = this.surfaceHolder.lockCanvas();
+                synchronized (surfaceHolder){
+                    this.gamePanel.update();
+                    this.gamePanel.draw(canvas);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                if(canvas != null){
+                    try{
+                        surfaceHolder.unlockCanvasAndPost(canvas);
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            timeMillis =(System.nanoTime() - startTime)/1000000;
+            waitTime = targetTime - timeMillis;
+            try{
+                sleep((int)waitTime);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    public void setRunning(boolean b){this.running = b;}
+}
