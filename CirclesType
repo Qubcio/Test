@@ -1,0 +1,12 @@
+package com.example.qubcio.circlegame;
+
+/**
+ * Created by Qubcio on 4/15/16.
+ */
+public enum CirclesTypes
+{
+    Yellow,
+    Red,
+    Green,
+    Blue
+}
