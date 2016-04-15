@@ -1,0 +1,183 @@
+package com.example.qubcio.circlegame;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+/**
+ * Created by Qubcio on 4/15/16.
+ *
+ * screen width = 1815(control right panel takes 105px)
+ * screen height = 1080
+ *
+ * game goes on 1000x600(60 squares 100x100)
+ */
+public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
+{
+    private MainThread mainThread;
+
+    private ArrayList<Square> squares;
+    private ArrayList<Circle> circles;
+    private ArrayList<PlayerLine> playerLines;
+
+    private int x, y;
+    private int squareSize;
+    private boolean firstClick;
+    public GamePanel(Context context)
+    {
+        super(context);
+        getHolder().addCallback(this);
+        setFocusable(true);
+        squareSize = 150;
+        firstClick = false;
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder)
+    {
+        squares = new ArrayList<>();
+        circles = new ArrayList<>();
+        playerLines = new ArrayList<>();
+        mainThread = new MainThread(this, getHolder());
+        mainThread.setRunning(true);
+        mainThread.start();
+        x = (getWidth() - 10 * squareSize)/2;
+        y = (getHeight() - 6 * squareSize)/2;
+        addGameObject();
+    }
+
+    private void addGameObject()
+    {
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 6; j++)
+            {
+                squares.add(new Square(i, j, this));
+                Random r = new Random();
+                switch (r.nextInt(4))
+                {
+                    case 0:{
+                        circles.add(new Circle(CirclesTypes.Yellow, i, j, this));
+                        squares.get(squares.size()-1).setOnIt(1);
+                    }   break;
+                    case 1:{
+                        circles.add(new Circle(CirclesTypes.Red, i, j, this));
+                        squares.get(squares.size()-1).setOnIt(2);
+                    }   break;
+                    case 2:{
+                        circles.add(new Circle(CirclesTypes.Green, i, j, this));
+                        squares.get(squares.size()-1).setOnIt(3);
+                    }   break;
+                    case 3:{
+                        circles.add(new Circle(CirclesTypes.Blue, i, j, this));
+                        squares.get(squares.size()-1).setOnIt(4);
+                    }   break;
+                }
+            }
+        }
+    }
+
+    public void update()
+    {
+        for(Circle c : circles)
+        {
+            c.update();
+        }
+    }
+
+    @SuppressLint("MissingSuperCall") @Override
+    public void draw(Canvas canvas)
+    {
+        background(canvas);
+        for(Square s : squares)
+        {
+            s.draw(canvas);
+        }
+        for(Circle c : circles)
+        {
+            c.draw(canvas);
+        }
+        for(PlayerLine p : playerLines)
+        {
+            p.draw(canvas);
+        }
+    }
+
+    private void background(Canvas canvas)
+    {
+        Paint paint = new Paint();
+        paint.setColor(Color.GRAY);
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
+        paint.setColor(Color.BLACK);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public float getX(){return this.x;}
+    public float getY(){return this.y;}
+    public int getSquareSize(){return this.squareSize;}
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        int x = (int)event.getX();
+        int y = (int)event.getY();
+        for(int i = 0; i < squares.size(); i++)
+        {
+            if(squares.get(i).getCircleOnIt() != 0 && squares.get(i).thisPosition(x,y) && !squares.get(i).getPlayerOnIt()){
+                if(playerLines.size() == 0){
+                    playerLines.add(new PlayerLine(this, squares.get(i).getX(), squares.get(i).getY()));
+                    squares.get(i).setPlayerOnIt(true);
+                    firstClick = true;
+                }else {
+                    if ((playerLines.get(playerLines.size()-1).getX() - squares.get(i).getX() > 0 && playerLines.get(playerLines.size()-1).getX() - squares.get(i).getX() < squareSize * 2)
+                            && (playerLines.get(playerLines.size()-1).getX() - squares.get(i).getX() < 0 && playerLines.get(playerLines.size()-1).getX() - squares.get(i).getX()< -squareSize)
+                            && (playerLines.get(playerLines.size()-1).getY() - squares.get(i).getY() > 0 && playerLines.get(playerLines.size()-1).getY() - squares.get(i).getY() < squareSize * 2)
+                            && (playerLines.get(playerLines.size()-1).getY() - squares.get(i).getY() < 0 && playerLines.get(playerLines.size()-1).getY() - squares.get(i).getY() < -squareSize)) {
+                        playerLines.add(new PlayerLine(this, squares.get(i).getX(), squares.get(i).getY()));
+                        squares.get(i).setPlayerOnIt(true);
+                        System.out.println("dza");
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder)
+    {
+        int counter = 0;
+        while(counter < 1000)
+        {
+            counter++;
+            try{
+                mainThread.setRunning(false);
+                mainThread.join();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+}
