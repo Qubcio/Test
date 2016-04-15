@@ -1,0 +1,30 @@
+package com.example.qubcio.circlegame;
+
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+
+/**
+ * Created by Qubcio on 4/15/16.
+ */
+public class PlayerLine
+{
+    private GamePanel gamePanel;
+    private int x,y;
+    public PlayerLine(GamePanel gamePanel, int x, int y)
+    {
+        this.gamePanel = gamePanel;
+        this.x = x;
+        this.y = y;
+    }
+
+    public void draw(Canvas canvas)
+    {
+        Paint paint = new Paint();
+        paint.setColor(Color.MAGENTA);
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawCircle(x + gamePanel.getSquareSize()/2 , y + gamePanel.getSquareSize()/2, 10, paint);
+    }
+    public int getX(){return this.x;}
+    public int getY(){return this.y;}
+}
