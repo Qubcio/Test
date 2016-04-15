@@ -1,0 +1,45 @@
+package com.example.qubcio.circlegame;
+
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+
+
+public class Square
+{
+    //scale of those square is from 0 to 9 and from 0 to 5
+    private int posX,posY;
+    private int onIt;       //0-non , 1 - yellow, 2 - red, 3 - green, 4 - blue
+    private int squareSize;
+    private boolean playerOnIt;
+    public Square(int x, int y, GamePanel gamePanel)
+    {
+        this.squareSize = gamePanel.getSquareSize();
+        posX = (int)(gamePanel.getX() + squareSize * x);
+        posY = (int)(gamePanel.getY() + squareSize * y);
+        onIt = 0;
+        playerOnIt = false;
+    }
+
+    public void draw(Canvas canvas)
+    {
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(posX, posY, posX + squareSize - 1, posY + squareSize - 1, paint);
+        paint.setColor(Color.WHITE);
+        canvas.drawRect(posX + 2, posY + 2, posX + squareSize - 3, posY + squareSize - 3, paint);
+    }
+
+    public boolean thisPosition(int x1, int y1)
+    {
+        return (x1 > posX && x1 < (posX + squareSize - 1) && y1 > posY && y1 < (posY + squareSize - 1));
+    }
+
+    public void setOnIt(int i){this.onIt = i;}
+    public int getCircleOnIt(){return this.onIt;}
+    public void setPlayerOnIt(boolean b){this.playerOnIt = b;}
+    public boolean getPlayerOnIt(){return this.playerOnIt;}
+    public int getX(){return this.posX;}
+    public int getY(){return this.posY;}
+}
