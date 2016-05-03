@@ -1,0 +1,25 @@
+package main;
+import java.awt.Canvas;
+import java.awt.Dimension;
+
+import javax.swing.JFrame;
+
+public class Frame extends Canvas {
+	private static final long serialVersionUID = 1L;
+
+	public Frame(MainPanel mainPanel)
+	{
+		int width = MainPanel.WIDTH;
+		int height = MainPanel.HEIGHT;
+		JFrame frame = new JFrame();
+		frame.setPreferredSize(new Dimension(width,height));
+		frame.setMaximumSize(new Dimension(width,height));
+		frame.setMinimumSize(new Dimension(width,height));
+
+		frame.setResizable(false);
+		frame.setLocationRelativeTo(null);
+		
+		frame.add(mainPanel);
+		frame.setVisible(true);
+	}
+}
